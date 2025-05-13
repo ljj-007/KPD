@@ -1,0 +1,10 @@
+/checkpoints
+/data
+/processed_data
+*__pycache__
+/tmp
+/results
+.vscode
+/envs
+/probe_data
+/probe_teacher_data
