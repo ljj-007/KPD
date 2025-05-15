@@ -1,6 +1,6 @@
-# PKD
+# KPD
 
-The codes for PKD framework.
+The codes for KPD framework.
 
 ## Usage
 
@@ -19,7 +19,7 @@ chmod 777 ./run_02.sh
 
 - 03 Distill from teacher model to student model
 
-```
+```shell
 chmod 777 ./run_pkd
 ./run_pkd
 ```
