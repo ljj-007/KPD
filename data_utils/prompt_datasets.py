@@ -11,18 +11,6 @@ import json
 
 
 class PromptDataset(Dataset):
-    """
-    数据集返回的每个样本包含: (index, prompt, rest)
-    每个批次由collate函数处理, 生成以下两个批次字典:
-    model_batch = {
-        "input_ids": [[pad, pad, id1, id2, ...], [...], ...],
-        "attention_mask": [[0, 0, 1, 1, ...], [...], ...]
-    } # 尺寸为 (batch_size, max_prompt_length), 左侧填充, 左边补pad
-    no_model_batch = {
-    "idx": [样本索引0, 样本索引1, ...],
-    "rest_ids": [[id3, id4, ..., pad, pad], [...], ...]
-    } # rest_ids: 输入的剩余部分或标签答案, 右侧填充, 右边补pad。
-    """
     def __init__(self, args, tokenizer, split, data_path=None, num=-1):
         super().__init__()
         self.tokenizer = tokenizer
@@ -74,7 +62,7 @@ class PromptDataset(Dataset):
         data_origin = [json.loads(line) for line in lines]
         data = []
         print_rank("Loading Data")
-        for d in tqdm(data_origin, disable=(get_rank() != 0)): # 只在主进程显示进度条
+        for d in tqdm(data_origin, disable=(get_rank() != 0)):
             prompt = d["prompt"].replace("<n>", "\n")
             prompt_ids = self.tokenizer.encode(prompt)
             output_ids = None
@@ -130,11 +118,11 @@ class PromptDataset(Dataset):
         model_batch = {
             "input_ids": torch.ones(bs, max_prompt_length, dtype=torch.long) * self.pad_id,
             "attention_mask": torch.zeros(bs, max_prompt_length, dtype=torch.long),
-        } # 右填充
+        }
         no_model_batch = {
             "idx": torch.zeros(bs, dtype=torch.long),
             "rest_ids": torch.ones(bs, max_rest_length, dtype=torch.long) * self.pad_id
-        } # 左填充
+        }
         for i, (idx, prompt, rest) in enumerate(samples):
             # left padding
             model_batch["input_ids"][i][-len(prompt):] = torch.tensor(prompt, dtype=torch.long)

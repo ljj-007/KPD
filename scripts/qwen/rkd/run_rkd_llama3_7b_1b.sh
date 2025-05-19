@@ -1,7 +1,7 @@
 #! /bin/bash
 
-# 显卡选择
-GPU_IDS=${4-"1"} # 使用第四个参数指定显卡编号，默认为 "0"
+
+GPU_IDS=${4-"1"}
 export CUDA_VISIBLE_DEVICES=${GPU_IDS}
 
 MASTER_ADDR=localhost
@@ -18,15 +18,15 @@ DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
 
 # model
 BASE_PATH=${1-"."}
-CKPT_NAME="qwen2.5-1.5b" # 学生模型基座路径
+CKPT_NAME="qwen2.5-1.5b"
 CKPT="${BASE_PATH}/checkpoints/${CKPT_NAME}/"
-TEACHER_CKPT_NAME="qwen2.5-7b" # 教师模型基座路径
+TEACHER_CKPT_NAME="qwen2.5-7b"
 TEACHER_CKPT="${BASE_PATH}/checkpoints/${TEACHER_CKPT_NAME}/"
-TEACHER_PEFT_CKPT_NAME="sft_8B" # 教师模型lora路径
-TEACHER_PEFT_CKPT="./results/qwen/train/sft/sft_7B/e10-bs4-lr5e-05-G1-N1-NN1-lora-256-64-0.1/35020" # 教师模型lora路径
+TEACHER_PEFT_CKPT_NAME="sft_8B"
+TEACHER_PEFT_CKPT="./results/qwen/train/sft/sft_7B/e10-bs4-lr5e-05-G1-N1-NN1-lora-256-64-0.1/35020"
 MP_SIZE=4
 # data
-DATA_DIR="${BASE_PATH}/processed_data/dolly/full/qwen/" # 数据目录
+DATA_DIR="${BASE_PATH}/processed_data/dolly/full/qwen/"
 # hp
 BATCH_SIZE=2
 LR=0.00001
@@ -35,7 +35,7 @@ EVAL_BATCH_SIZE=8
 # length
 MAX_LENGTH=512
 # runtime
-SAVE_PATH="${BASE_PATH}/results/qwen/train/rkd/rkd_qwen_8b_1b" # 结果保存路径
+SAVE_PATH="${BASE_PATH}/results/qwen/train/rkd/rkd_qwen_8b_1b"
 # seed
 SEED=10
 

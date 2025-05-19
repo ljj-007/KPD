@@ -48,13 +48,13 @@ class SampleGenerator():
                 result_id = torch.cat(
                     (input_ids[i][input_ids[i] != self.pad_id],
                      response_ids[i][response_ids[i] != self.pad_id]),
-                ) # 实际总长度
-                input_id = input_ids[i][input_ids[i] != self.pad_id] # 实际输入长度
-                response_id = response_ids[i][response_ids[i] != self.pad_id] # 实际输出长度
+                )
+                input_id = input_ids[i][input_ids[i] != self.pad_id]
+                response_id = response_ids[i][response_ids[i] != self.pad_id]
                 
-                results["input_ids"][i, :len(result_id)] = result_id # 实际总长度
+                results["input_ids"][i, :len(result_id)] = result_id
                 results["position_ids"][i, :len(result_id)] = torch.arange(len(result_id))
-                results["no_model_batch"][i, len(input_id):len(result_id)] = response_id # 实际输出部分
+                results["no_model_batch"][i, len(input_id):len(result_id)] = response_id
         results["attention_mask"] = torch.where(results["input_ids"] != self.pad_id, 1, 0)
         results["attention_mask"] = results["attention_mask"].float()
         results["no_model_batch"] = results["no_model_batch"].long()

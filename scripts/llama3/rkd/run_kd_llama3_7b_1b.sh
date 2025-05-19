@@ -1,7 +1,7 @@
 #! /bin/bash
 
-# 显卡选择
-GPU_IDS=${4-"0"} # 使用第四个参数指定显卡编号，默认为 "0"
+
+GPU_IDS=${4-"0"}
 export CUDA_VISIBLE_DEVICES=${GPU_IDS}
 
 MASTER_ADDR=localhost
@@ -18,15 +18,15 @@ DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
 
 # model
 BASE_PATH=${1-"."}
-CKPT_NAME="llama3.2-1b" # 学生模型基座路径
+CKPT_NAME="llama3.2-1b"
 CKPT="${BASE_PATH}/checkpoints/${CKPT_NAME}/"
-TEACHER_CKPT_NAME="llama3.1-8b" # 教师模型基座路径
+TEACHER_CKPT_NAME="llama3.1-8b"
 TEACHER_CKPT="${BASE_PATH}/checkpoints/${TEACHER_CKPT_NAME}/"
-TEACHER_PEFT_CKPT_NAME="sft_8B" # 教师模型lora路径
-TEACHER_PEFT_CKPT="./results/llama3/train/sft/sft_8B/e10-bs2-lr5e-05-G1-N1-NN1-lora-256-64-0.1/70050" # 教师模型lora路径
+TEACHER_PEFT_CKPT_NAME="sft_8B"
+TEACHER_PEFT_CKPT="./results/llama3/train/sft/sft_8B/e10-bs2-lr5e-05-G1-N1-NN1-lora-256-64-0.1/70050"
 MP_SIZE=4
 # data
-DATA_DIR="${BASE_PATH}/processed_data/dolly/full/llama3/" # 数据目录
+DATA_DIR="${BASE_PATH}/processed_data/dolly/full/llama3/"
 # hp
 BATCH_SIZE=2
 LR=0.00001
@@ -35,7 +35,7 @@ EVAL_BATCH_SIZE=8
 # length
 MAX_LENGTH=512
 # runtime
-SAVE_PATH="${BASE_PATH}/results/llama3/train/rkd/rkd_llama3_8b_1b" # 结果保存路径
+SAVE_PATH="${BASE_PATH}/results/llama3/train/rkd/rkd_llama3_8b_1b"
 # seed
 SEED=10
 

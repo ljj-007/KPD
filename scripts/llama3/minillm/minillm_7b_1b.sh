@@ -1,7 +1,7 @@
 #! /bin/bash
 
-# 显卡选择
-GPU_IDS=${4-"0,1"} # 使用第四个参数指定显卡编号，默认为 "0"
+
+GPU_IDS=${4-"0,1"}
 export CUDA_VISIBLE_DEVICES=${GPU_IDS}
 
 MASTER_ADDR=localhost

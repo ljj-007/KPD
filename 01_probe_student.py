@@ -10,13 +10,13 @@ from tqdm import tqdm
 def create_directory_if_not_exists(path):
     if not os.path.exists(path):
         os.makedirs(path)
-        print(f"文件夹 '{path}' 已创建。")
+        print(f"dictory '{path}' exists.")
     else:
-        print(f"文件夹 '{path}' 已存在。")
+        print(f"dictory '{path}' exits.")
 
 
 def get_data(data_path):
-    """ 读取数据 """
+    """ read data """
     train_data_path = os.path.join(data_path, "train.jsonl")
     valid_data_path = os.path.join(data_path, "valid.jsonl")
     train_data, valid_data = [], []
@@ -32,21 +32,21 @@ def get_data(data_path):
 
 
 def get_model(model_path):
-    """ 读取模型 """
+    """ load model """
     model = AutoModelForCausalLM.from_pretrained(model_path, torch_dtype=torch.float16, device_map="auto")
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     return model, tokenizer
 
 
 def get_probe_data(d, model, tokenizer):
-    """ 输入一条数据, 输出这条数据相关的探测数据, 用于对教师模型的关键层进行探测 """
+    """ Input a piece of data, output the probe data associated with this piece of data, which is used to probe the key layers of the teacher model. """
     probe_data = []
     text = d["prompt"] + d["output"]
     inputs = tokenizer(text, return_tensors="pt").to(model.device)
     # split_index = torch.nonzero(inputs["input_ids"][0] == 0).squeeze().cpu().item()
     inputs_prompt = tokenizer(d["prompt"], return_tensors="pt").to(model.device)
-    inputs_len = len(inputs["input_ids"][0]) # 总长度
-    inputs_prompt_len = len(inputs_prompt["input_ids"][0]) # 输入长度
+    inputs_len = len(inputs["input_ids"][0])
+    inputs_prompt_len = len(inputs_prompt["input_ids"][0])
     # print(tokenizer.decode(inputs["input_ids"][0]))
     
     with torch.no_grad():

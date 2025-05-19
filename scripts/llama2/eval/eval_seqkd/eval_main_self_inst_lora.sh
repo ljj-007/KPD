@@ -1,10 +1,10 @@
 #! /bin/bash
 
-# 显卡选择
-GPU_IDS=${4-"2"} # 使用第四个参数指定显卡编号，默认为 "0"
+
+GPU_IDS=${4-"2"}
 export CUDA_VISIBLE_DEVICES=${GPU_IDS}
 
-TEST_TYPE="sft" # 需要修改
+TEST_TYPE="sft"
 MASTER_ADDR=localhost
 MASTER_PORT=${2-2113}
 NNODES=1

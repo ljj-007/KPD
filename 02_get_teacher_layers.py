@@ -19,31 +19,31 @@ def move_inputs_to_device(tokenizer, model, prompt):
 
 
 def get_model(args):
-    """ 使用 huggingface + accelerate + deepspeed 安全加载大模型 """
-    # Step 1: 创建空模型骨架，避免瞬间显存占用
+    """ huggingface + accelerate + deepspeed """
+
     with init_empty_weights():
         config = AutoConfig.from_pretrained(args.model_path)
         model = AutoModelForCausalLM.from_config(config)
-    # Step 2: 安全加载参数并分配到多卡
+
     model = load_checkpoint_and_dispatch(
         model,
         args.model_path,
-        device_map="auto",             # 自动多卡分配
-        dtype=torch.float16,           # 半精度加载
+        device_map="auto",
+        dtype=torch.float16,
     )
-    # Step 3: 读取 DeepSpeed 配置
+
     with open(args.ds_config_path, "r") as f:
         ds_config = json.load(f)
     ds_config["steps_per_print"] = 1
     ds_config["zero_optimization"]["stage"]=0
-    # Step 4: 初始化 DeepSpeed 引擎（模型不用再移动到 device）
+
     model_engine, _, _, _ = deepspeed.initialize(
         model=model,
         config_params=ds_config,
         optimizer=None,
         lr_scheduler=None
     )
-    # Step 5: 加载 tokenizer
+
     tokenizer = AutoTokenizer.from_pretrained(args.model_path)
     return model_engine, tokenizer
 
@@ -69,8 +69,8 @@ def init_parser():
     parser.add_argument("--bin-data", type=bool, default=False)
     parser.add_argument("--txt-data", type=bool, default=False)
     parser.add_argument("--seed", type=int, default=43)
-    parser.add_argument("--local_rank", type=int, default=-1, help="deepspeed 启动时需要的 local rank")
-    parser.add_argument("--deepspeed", action="store_true", help="是否使用 deepspeed 启动")
+    parser.add_argument("--local_rank", type=int, default=-1, help="deepspeed local rank")
+    parser.add_argument("--deepspeed", action="store_true", help="deepspeed")
     args = parser.parse_args()
     return args
 
@@ -92,8 +92,8 @@ def probe_teacher_model(args):
                     output = probe["output"]
                     results += kn.get_coarse_neurons(prompt=prompt, ground_truth=output, batch_size=1, steps=5, adaptive_threshold=0.3)
                 end_time = time.time()
-                print(f"探测到第{idx}条数据")
-                print(f"单条数据的时间是:{end_time - start_time}s")
+                print(f"probe {idx} data")
+                print(f"one data time:{end_time - start_time}s")
                 print(results)
                 save_ans = {}
                 save_ans["id"] = idx

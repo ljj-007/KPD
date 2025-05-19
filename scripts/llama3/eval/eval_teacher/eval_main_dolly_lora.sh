@@ -1,9 +1,9 @@
 #! /bin/bash
 
-# 显卡选择
-GPU_IDS=${6-"0"} # 使用第四个参数指定显卡编号，默认为 "0"
+
+GPU_IDS=${6-"0"}
 export CUDA_VISIBLE_DEVICES=${GPU_IDS}
-TEST_TYPE="teacher" # 需要修改
+TEST_TYPE="teacher"
 
 
 MASTER_ADDR=localhost

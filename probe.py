@@ -46,7 +46,7 @@ def get_data(data_path):
 
 
 def probe_model(args):
-    # 01 准备模型
+
     config = AutoConfig.from_pretrained(args.model_path)
     model = AutoModelForCausalLM.from_pretrained(args.model_path, config=config, device_map=None)
     with open(args.ds_config_path, "r") as f:
@@ -61,7 +61,7 @@ def probe_model(args):
         config_params=ds_config
     )
     tokenizer = AutoTokenizer.from_pretrained(args.model_path)
-    # 02 准备数据
+
     train_data, valid_data = get_data(args.data_path)
     # data = PromptDataset(args, tokenizer, "valid", data_path=args.data_path)
     # rng_sample = random.Random(args.seed)
@@ -71,7 +71,7 @@ def probe_model(args):
     # print(len(data["dev"])) # 1000
     
     kn = KnowledgeNeurons(model, tokenizer, model_type="llama")
-    # 03 统计训练集中的神经元数量
+
     tmp_results = []
     for d in train_data:
         tmp_results += kn.get_coarse_neurons(prompt=d["prompt"], ground_truth=d["output"], batch_size=1, steps=10, adaptive_threshold=0.3)

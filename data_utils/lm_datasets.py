@@ -22,7 +22,7 @@ class LMTrainDataset(Dataset):
         self.max_length = args.max_length
         self.max_prompt_length = args.max_prompt_length
         self.rng_sample = rng_sample
-        self.lm_ctx = DistributedMMapIndexedDataset(path, f"{split}", get_rank(), get_world_size()) # 完整的输入tokens
+        self.lm_ctx = DistributedMMapIndexedDataset(path, f"{split}", get_rank(), get_world_size())
 
         if os.path.exists(os.path.join(path, f"{split}.jsonl")):
             with open(os.path.join(path, f"{split}.jsonl")) as f:
@@ -45,28 +45,25 @@ class LMTrainDataset(Dataset):
     
     def _get_lm(self, index):
         data = self.lm_ctx[index]
-        input_ids = data.astype(int) # 完整输入和输出的tokens
+        input_ids = data.astype(int)
         return {
             "input_ids": input_ids
         }
     
     def _process_lm(self, i, samp, model_data, no_model_data, gen_data):
-        # model_data["input_ids"][i][:input_len-1] = prompt + response [:-1] /// pad_id # prompt和response部分都有, 右padding
-        # no_model_data["label"][i][:input_len-1] = prompt + response [1:] /// -100 # 只有response部分, 左右都有填充
-        # gen_data["input_ids"][i][-len(prompt):] = prompt /// pad_id # 只有prompt部分, 左padding, 生成样本用
-        input_ids = samp["input_ids"] # 完整输入和输出的tokens
+        input_ids = samp["input_ids"]
         source_len = 1
         
-        prompt = None # 完整输入的tokens
-        if 65535 in input_ids and self.args.model_type != "qwen" and self.args.model_type != "llama3": # 如果不是qwen模型，则由于存储数据使用的是uint16, -1会被存储为65535
-            source_len = np.where(input_ids==65535)[0][0] # prompt的长度
+        prompt = None
+        if 65535 in input_ids and self.args.model_type != "qwen" and self.args.model_type != "llama3":
+            source_len = np.where(input_ids==65535)[0][0]
             prompt = input_ids[:source_len]
             input_ids = np.concatenate([input_ids[:source_len], input_ids[source_len+1:]], axis=0)
         elif 4294967295 in input_ids and (self.args.model_type == "qwen" or self.args.model_type == "llama3"):
-            source_len = np.where(input_ids==4294967295)[0][0] # prompt的长度
+            source_len = np.where(input_ids==4294967295)[0][0]
             prompt = input_ids[:source_len]
             input_ids = np.concatenate([input_ids[:source_len], input_ids[source_len+1:]], axis=0)
-        input_ids = input_ids[:self.max_length] # 完整输入和输出的tokens
+        input_ids = input_ids[:self.max_length]
         input_len = len(input_ids)
         model_data["input_ids"][i][:input_len-1] = torch.tensor(input_ids[:-1], dtype=torch.long)
         model_data["attention_mask"][i][:input_len-1] = 1.0

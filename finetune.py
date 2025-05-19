@@ -256,7 +256,7 @@ def finetune(args, tokenizer: AutoTokenizer, model: deepspeed.DeepSpeedEngine, o
         dp_world_size = dist.get_world_size()
         dp_rank = dist.get_rank()
         dp_group = None
-        loss_func = nn.CrossEntropyLoss(ignore_index=-100) # 默认的也是-100
+        loss_func = nn.CrossEntropyLoss(ignore_index=-100)
 
     sampler = DistributedSampler(dataset["train"], shuffle=True, drop_last=True, rank=dp_rank, num_replicas=dp_world_size)
     train_dataloader = DataLoader(
@@ -503,13 +503,13 @@ def evaluate(args, tokenizer, model, dataset: LMTrainDataset, split, epoch, devi
                     generation_config=generation_config,
                     max_new_tokens=max_new_tokens)
                 
-                full_ids = gen_out.sequences # (8, 512) 输入和输出都有，输入不变，多了输出
+                full_ids = gen_out.sequences # (8, 512)
 
                 full_ids = F.pad(
                     full_ids,
                     (0, args.max_length - full_ids.shape[1]),
                     value=tokenizer.pad_token_id,
-                ) # 右侧填充pad_token_id
+                )
 
                 response_ids = full_ids[:, gen_data["input_ids"].size(1):]
                 all_response_ids.append(response_ids)

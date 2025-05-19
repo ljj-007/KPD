@@ -1,7 +1,7 @@
 #! /bin/bash
 
-# 显卡选择
-GPU_IDS=${4-"2,3"} # 使用第四个参数指定显卡编号，默认为 "0"
+
+GPU_IDS=${4-"2,3"}
 export CUDA_VISIBLE_DEVICES=${GPU_IDS}
 
 MASTER_ADDR=localhost
@@ -18,15 +18,15 @@ DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
 
 # model
 BASE_PATH=${1-"."}
-CKPT_NAME="TinyLlama-1.1B" # 学生模型基座路径
+CKPT_NAME="TinyLlama-1.1B"
 CKPT="${BASE_PATH}/checkpoints/${CKPT_NAME}/"
-TEACHER_CKPT_NAME="llama2-7b" # 教师模型基座路径
+TEACHER_CKPT_NAME="llama2-7b"
 TEACHER_CKPT="${BASE_PATH}/checkpoints/${TEACHER_CKPT_NAME}/"
-TEACHER_PEFT_CKPT_NAME="sft_7B_new" # 教师模型lora路径
+TEACHER_PEFT_CKPT_NAME="sft_7B_new"
 TEACHER_PEFT_CKPT="${BASE_PATH}/results/llama2/train/sft/${TEACHER_PEFT_CKPT_NAME}/e1-bs8-lr5e-05-G1-N4-NN1-lora-16-64-0.1/437"
 MP_SIZE=4
 # data
-DATA_DIR="${BASE_PATH}/processed_data/dolly/full/llama2/" # 数据目录
+DATA_DIR="${BASE_PATH}/processed_data/dolly/full/llama2/"
 # hp
 BATCH_SIZE=8
 LR=0.00001
@@ -35,7 +35,7 @@ EVAL_BATCH_SIZE=8
 # length
 MAX_LENGTH=512
 # runtime
-SAVE_PATH="${BASE_PATH}/results/llama2/train/kd/kd_llama2_7b_1b_tmp" # 结果保存路径
+SAVE_PATH="${BASE_PATH}/results/llama2/train/kd/kd_llama2_7b_1b_tmp"
 # seed
 SEED=10
 

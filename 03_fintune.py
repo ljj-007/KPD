@@ -206,41 +206,41 @@ def get_distil_loss(args, tokenizer, model, teacher_model, model_batch, no_model
 
 
 def get_distil_loss_probe(args, tokenizer, model, teacher_model, model_batch, no_model_batch, logits, student_hiddens, probe_layers):
-    # 1. 获取教师模型输出
+
     with torch.no_grad():
         teacher_model.eval()
         teacher_outputs = teacher_model(**model_batch, use_cache=False, output_hidden_states=True)
-        teacher_hiddens = teacher_outputs.hidden_states  # 教师模型的所有中间层 hidden states
-        teacher_logits = teacher_outputs.logits  # 教师模型的最终 logits
+        teacher_hiddens = teacher_outputs.hidden_states
+        teacher_logits = teacher_outputs.logits
 
     if args.model_type == "qwen":
-        teacher_logits = teacher_logits[:, :, :logits.shape[2]]  # 如果是特定模型，需要调整维度
+        teacher_logits = teacher_logits[:, :, :logits.shape[2]]
 
     if args.model_parallel:
         raise NotImplementedError
     else:
-        # 2. 计算蒸馏损失
+
         pkd_loss = 0.0
 
-        # 3. 映射教师层到学生层并计算每一层的 logits 损失
+
         for teacher_layer_id in probe_layers:
-            # 映射教师层到学生层（假设每 2 层教师层对应 1 层学生层）
+
             map_ratio = 2
             if args.model_type == "llama2":
                 map_ratio = 2
-            student_layer_id = teacher_layer_id // map_ratio  # 映射教师层到学生层
+            student_layer_id = teacher_layer_id // map_ratio
 
-            # 获取教师和学生模型对应层的 hidden state
-            teacher_hidden = teacher_hiddens[teacher_layer_id]  # 获取教师第 `teacher_layer_id` 层的 hidden state
-            student_hidden = student_hiddens[student_layer_id]  # 获取学生第 `student_layer_id` 层的 hidden state
 
-            # 使用学生模型的 `lm_head` 对学生 hidden state 进行映射
+            teacher_hidden = teacher_hiddens[teacher_layer_id]
+            student_hidden = student_hiddens[student_layer_id]
+
+
             student_hidden_logits = model.module.lm_head(student_hidden)  # [B, T, V]
             
-            # 使用教师模型的对应层进行映射（如果教师模型有类似的映射层）
-            teacher_hidden_logits = teacher_model.lm_head(teacher_hidden)  # [B, T, V] (假设教师模型有类似的映射层)
 
-            # 计算 KL 散度
+            teacher_hidden_logits = teacher_model.lm_head(teacher_hidden)  # [B, T, V]
+
+
             # log_probs_s = F.log_softmax(student_hidden_logits / args.temperature, dim=-1)
             # probs_t = F.softmax(teacher_hidden_logits / args.temperature, dim=-1)
             # kl = F.kl_div(log_probs_s, probs_t, reduction='batchmean') * (args.temperature ** 2)
@@ -250,13 +250,13 @@ def get_distil_loss_probe(args, tokenizer, model, teacher_model, model_batch, no
 
         pkd_loss /= len(probe_layers)
         pkd_loss *= 0.1
-        # 4. 计算原始蒸馏损失 (基于最终 logits)
+
         origin_loss = forward_kl(logits, teacher_logits, no_model_batch)
 
         all_loss = pkd_loss + origin_loss
 
-        # 5. 返回总的蒸馏损失，按层数平均
-        return all_loss, pkd_loss, origin_loss  # 因为我们加了最后一层的损失，所以总层数 + 1
+
+        return all_loss, pkd_loss, origin_loss
 
 
 
@@ -312,7 +312,7 @@ def finetune(args, tokenizer: AutoTokenizer, model: deepspeed.DeepSpeedEngine, o
         dp_world_size = dist.get_world_size()
         dp_rank = dist.get_rank()
         dp_group = None
-        loss_func = nn.CrossEntropyLoss(ignore_index=-100) # 默认的也是-100
+        loss_func = nn.CrossEntropyLoss(ignore_index=-100)
 
     sampler = DistributedSampler(dataset["train"], shuffle=True, drop_last=True, rank=dp_rank, num_replicas=dp_world_size)
     train_dataloader = DataLoader(
@@ -406,9 +406,6 @@ def finetune(args, tokenizer: AutoTokenizer, model: deepspeed.DeepSpeedEngine, o
                 # distill_loss = get_distil_loss(args, tokenizer, model, teacher_model, model_batch, no_model_batch, logits)
                 distill_loss, pkd_loss, origin_loss = get_distil_loss_probe(args, tokenizer, model, teacher_model, model_batch, no_model_batch, logits, hidden_states, probe_layers)
 
-                # print_rank(f"整体损失:{distill_loss}")
-                # print_rank(f"pkd损失:{pkd_loss}")
-                # print_rank(f"原始损失{origin_loss}")
 
                 loss = (1 - args.kd_ratio) * lm_loss + args.kd_ratio * distill_loss
             else:
@@ -595,13 +592,13 @@ def evaluate(args, tokenizer, model, dataset: LMTrainDataset, split, epoch, devi
                     generation_config=generation_config,
                     max_new_tokens=max_new_tokens)
                 
-                full_ids = gen_out.sequences # (8, 512) 输入和输出都有，输入不变，多了输出
+                full_ids = gen_out.sequences # (8, 512)
 
                 full_ids = F.pad(
                     full_ids,
                     (0, args.max_length - full_ids.shape[1]),
                     value=tokenizer.pad_token_id,
-                ) # 右侧填充pad_token_id
+                )
 
                 response_ids = full_ids[:, gen_data["input_ids"].size(1):]
                 all_response_ids.append(response_ids)
@@ -672,11 +669,11 @@ def get_probe_layers(args):
     probe_teacher_data = []
     probe_teacher_data_path = os.path.join(args.base_path, "probe_teacher_data", args.model_type, "train.json")
     
-    # 读取数据文件
+
     with open(probe_teacher_data_path, "r", encoding="utf-8") as rf:
         probe_teacher_data = json.load(rf)
     
-    # 统计每一层出现的次数
+
     for probe_data in probe_teacher_data:
         for layer_id, number_id in probe_data["result"]:
             if layer_id not in layer_num_dict:
@@ -684,19 +681,16 @@ def get_probe_layers(args):
             else:
                 layer_num_dict[layer_id] += 1
     
-    # 找到出现次数最多的层和它的层号
+
     max_layer = max(layer_num_dict, key=layer_num_dict.get)
     max_layer_count = layer_num_dict[max_layer]
     
-    # 检查是否值最大的键同时也是最大键
+
     if max_layer == max(layer_num_dict.keys()):
-        # 如果是最大键，删除它
         del layer_num_dict[max_layer]
     
-    # 获取剩余值最大的前三个键
     sorted_layers = sorted(layer_num_dict.items(), key=lambda item: item[1], reverse=True)[:3]
     
-    # 提取键并返回
     return_layers = [layer[0] for layer in sorted_layers]
     
     return return_layers

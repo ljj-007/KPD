@@ -136,7 +136,6 @@ def main():
     initialize(args)
 
     if dist.get_rank() == 0:
-        # print_args(args) # 打印所有参数
         with open(os.path.join(args.save, "args.json"), "w") as f:
             json.dump(vars(args), f, indent=4, ensure_ascii=False)
 
