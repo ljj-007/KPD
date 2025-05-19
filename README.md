@@ -4,9 +4,7 @@ The codes for our KPD framework.
 
 ## Framework
 
-The overall workflow of our distillation framework, KPD, is illustrated in the following figure.
-
-![](./framework.png)
+The overall workflow of our distillation framework, KPD, consists of three stages designed to enable precise and effective knowledge transfer. First, we probe the student model by computing the prediction uncertainty for each token and selecting those with the highest uncertainty as key tokens, which indicate the knowledge gaps. Second, we probe the teacher model to locate where the relevant knowledge is stored. Using integrated gradients, we compute attribution scores for each neuron and identify the teacher layers that are most responsible for predicting the key tokens. Third, we perform distillation from the selected teacher layers to proportionally mapped student layers using an isometric mapping strategy, minimizing the KL divergence between intermediate logits to guide the student in learning the missing knowledge. This pipeline allows our KPD to focus distillation on what the student needs and where the teacher provides it. 
 
 ## Folder Structure
 
