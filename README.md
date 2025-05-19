@@ -6,7 +6,7 @@ The codes for our KPD framework.
 
 The overall workflow of our distillation framework, KPD, is illustrated in the following figure.
 
-![](C:\L\document\paper\own\NeurIPS2025\新的匿名仓库\KPD\framework.png)
+![](./framework.png)
 
 ## Folder Structure
 
