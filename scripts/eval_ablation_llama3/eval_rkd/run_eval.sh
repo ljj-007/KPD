@@ -1,0 +1,20 @@
+#!/bin/bash
+
+MASTER_PORT=2040
+DEVICE=${1-"0"}
+ckpt=${2}
+
+# dolly eval
+CUDA_VISIBLE_DEVICES=${DEVICE} bash ./scripts/eval_ablation_llama3/eval_rkd/eval_main_dolly_lora.sh ./ ${MASTER_PORT} 1 llama3
+CUDA_VISIBLE_DEVICES=${DEVICE} bash ./scripts/eval_ablation_llama3/eval_rkd/eval_main_self_inst_lora.sh ./ ${MASTER_PORT} 1 llama3
+CUDA_VISIBLE_DEVICES=${DEVICE} bash ./scripts/eval_ablation_llama3/eval_rkd/eval_main_vicuna_lora.sh ./ ${MASTER_PORT} 1 llama3
+CUDA_VISIBLE_DEVICES=${DEVICE} bash ./scripts/eval_ablation_llama3/eval_rkd/eval_main_sinst_lora.sh ./ ${MASTER_PORT} 1 llama3
+CUDA_VISIBLE_DEVICES=${DEVICE} bash ./scripts/eval_ablation_llama3/eval_rkd/eval_main_uinst_lora.sh ./ ${MASTER_PORT} 1 llama3
+# for seed in 10 20 30 40 50
+# do
+#     CUDA_VISIBLE_DEVICES=${DEVICE} bash ./scripts/openllama3/eval/eval_main_dolly_lora.sh ./ ${MASTER_PORT} 1 openllama3-3B
+#     CUDA_VISIBLE_DEVICES=${DEVICE} bash ./scripts/openllama3/eval/eval_main_self_inst_lora.sh ./ ${MASTER_PORT} 1 openllama3-3B
+#     CUDA_VISIBLE_DEVICES=${DEVICE} bash ./scripts/openllama3/eval/eval_main_vicuna_lora.sh ./ ${MASTER_PORT} 1 openllama3-3B
+#     CUDA_VISIBLE_DEVICES=${DEVICE} bash ./scripts/openllama3/eval/eval_main_sinst_lora.sh ./ ${MASTER_PORT} 1 openllama3-3B
+#     CUDA_VISIBLE_DEVICES=${DEVICE} bash ./scripts/openllama3/eval/eval_main_uinst_lora.sh ./ ${MASTER_PORT} 1 openllama3-3B
+# done

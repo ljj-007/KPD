@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # 显卡选择
-GPU_IDS=${4-"3"} # 使用第四个参数指定显卡编号，默认为 "0"
+GPU_IDS=${4-"0"} # 使用第四个参数指定显卡编号，默认为 "0"
 export CUDA_VISIBLE_DEVICES=${GPU_IDS}
 
 MASTER_ADDR=localhost # 分布式训练的主节点地址，默认为 localhost。
@@ -18,7 +18,7 @@ DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
 
 # model
 BASE_PATH=${1-"."} # 基础路径，默认为传入的第一个参数，若未传入则为 "/home/MiniLLM"。
-CKPT_NAME="llama-3.1-8b" # 检查点名称，默认为 "llama-3.1-8b"。
+CKPT_NAME="llama3.1-8b" # 检查点名称，默认为 "llama-3.1-8b"。
 CKPT="${BASE_PATH}/checkpoints/${CKPT_NAME}/" # 检查点路径。
 # data
 DATA_DIR="${BASE_PATH}/processed_data/dolly/full/llama3/" # 数据目录

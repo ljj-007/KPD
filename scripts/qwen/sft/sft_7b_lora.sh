@@ -1,14 +1,14 @@
 #! /bin/bash
 
 # 显卡选择
-GPU_IDS=${4-"2,3"} # 使用第四个参数指定显卡编号，默认为 "0"
+GPU_IDS=${4-"1"} # 使用第四个参数指定显卡编号，默认为 "0"
 export CUDA_VISIBLE_DEVICES=${GPU_IDS}
 
 MASTER_ADDR=localhost # 分布式训练的主节点地址，默认为 localhost。
 MASTER_PORT=${2-2012} # 主节点端口，默认为传入的第二个参数，若未传入则为 2012。
 NNODES=1 # 总节点数，默认为 1。
 NODE_RANK=0 # 当前节点的排名，默认为 0。
-GPUS_PER_NODE=${3-2} # 每个节点上的 GPU 数量，默认为传入的第三个参数，若未传入则为 1。
+GPUS_PER_NODE=${3-1} # 每个节点上的 GPU 数量，默认为传入的第三个参数，若未传入则为 1。
 
 DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
                   --nnodes $NNODES \
@@ -18,7 +18,7 @@ DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
 
 # model
 BASE_PATH=${1-"."} # 基础路径，默认为传入的第一个参数，若未传入则为 "/home/MiniLLM"。
-CKPT_NAME="Qwen-2.5-7B" # 检查点名称，默认为 "Qwen-2.5-7B"。
+CKPT_NAME="qwen2.5-7b" # 检查点名称，默认为 "Qwen-2.5-7B"。
 CKPT="${BASE_PATH}/checkpoints/${CKPT_NAME}/" # 检查点路径。
 # data
 DATA_DIR="${BASE_PATH}/processed_data/dolly/full/qwen/" # 数据目录

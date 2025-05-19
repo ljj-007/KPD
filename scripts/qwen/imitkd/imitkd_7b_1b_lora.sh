@@ -1,14 +1,14 @@
 #! /bin/bash
 
 # 显卡选择
-GPU_IDS=${4-"0,1"} # 使用第四个参数指定显卡编号，默认为 "0"
+GPU_IDS=${4-"1"} # 使用第四个参数指定显卡编号，默认为 "0"
 export CUDA_VISIBLE_DEVICES=${GPU_IDS}
 
 MASTER_ADDR=localhost
 MASTER_PORT=${2-2012}
 NNODES=1
 NODE_RANK=0
-GPUS_PER_NODE=${3-2}
+GPUS_PER_NODE=${3-1}
 
 DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
                   --nnodes $NNODES \
@@ -18,10 +18,10 @@ DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
 
 # model
 BASE_PATH=${1-"."}
-CKPT_NAME="Qwen-2.5-1.5B"
+CKPT_NAME="qwen2.5-7b"
 CKPT="${BASE_PATH}/checkpoints/${CKPT_NAME}/"
 PEFT_CKPT_NAME="qwen-2.5-1.5B"
-PEFT_CKPT="./results/llama3/train/init/llama3_1b/e3-bs8-lr0.0005-G1-N2-NN1-lora-256-64-0.1/2625"
+PEFT_CKPT="./results/qwen/train/init/qwen_1b/e5-bs8-lr0.0005-G1-N1-NN1-lora-256-64-0.1/8755"
 TEACHER_CKPT_NAME="llama-3.1-8b"
 TEACHER_CKPT="${BASE_PATH}/checkpoints/${TEACHER_CKPT_NAME}/"
 TEACHER_PEFT_CKPT_NAME="sft_8B"

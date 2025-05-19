@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # 显卡选择
-GPU_IDS=${4-"2"} # 使用第四个参数指定显卡编号，默认为 "0"
+GPU_IDS=${6-"0"} # 使用第四个参数指定显卡编号，默认为 "0"
 export CUDA_VISIBLE_DEVICES=${GPU_IDS}
 TEST_TYPE="sft" # 需要修改
 
@@ -20,18 +20,18 @@ DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
 
 # model
 BASE_PATH=${1-"."}
-CKPT_NAME=${6-"llama2"}
+CKPT_NAME=${4-"llama3"}
 # CKPT="${BASE_PATH}/checkpoints/${CKPT_NAME}/"
-CKPT="/data3/jun/my-distill/checkpoints/TinyLlama-1.1B/"
+CKPT="./checkpoints/llama3.2-1b"
 PEFT_CKPT_NAME=${5-"lora"}
-PEFT_CKPT="./results/llama2/train/sft/sft_1b/e5-bs4-lr5e-05-G1-N1-NN1-lora-256-64-0.1/17510"
+PEFT_CKPT="./results/llama3/train/sft/sft_8B/e10-bs2-lr5e-05-G1-N1-NN1-lora-256-64-0.1/70050"
 # data
 DATA_NAMES="dolly"
-DATA_DIR="./processed_data/dolly/full/llama2"
+DATA_DIR="./processed_data/dolly/full/llama3"
 # hp
 EVAL_BATCH_SIZE=16
 # runtime
-SAVE_PATH="${BASE_PATH}/results/llama2/eval_main/${TEST_TYPE}/"
+SAVE_PATH="${BASE_PATH}/results/llama3/eval_main/${TEST_TYPE}/"
 TYPE="eval_main"
 
 
@@ -41,7 +41,7 @@ OPTS+=" --base-path ${BASE_PATH}"
 OPTS+=" --model-path ${CKPT}"
 OPTS+=" --ckpt-name ${CKPT_NAME}"
 OPTS+=" --n-gpu ${GPUS_PER_NODE}"
-OPTS+=" --model-type llama2"
+OPTS+=" --model-type llama3"
 # data
 OPTS+=" --data-dir ${DATA_DIR}"
 OPTS+=" --data-names ${DATA_NAMES}"

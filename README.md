@@ -1,6 +1,56 @@
 # KPD
 
-The codes for KPD framework.
+The codes for our KPD framework.
+
+## Framework
+
+The overall workflow of our distillation framework, KPD, is illustrated in the following figure.
+
+![](C:\L\document\paper\own\NeurIPS2025\新的匿名仓库\KPD\framework.png)
+
+## Folder Structure
+
+The structure of the folder is shown below:
+
+```csharp
+ KPD
+ ├─configs
+ ├─data
+ ├─data_utils
+ ├─distillm
+ ├─EasyEdit
+ ├─examples
+ ├─minillm
+ ├─mpu
+ ├─probe_data
+ ├─probe_teacher_data
+ ├─results
+ ├─scripts
+ ├─tools
+ └README.md
+```
+
+Introduction to the structure of the folder:
+
+- /configs: The configuration file for this project is in it.
+- /data: The data for this project is stored in this directory.
+- /data_utils: The data processing flow for this project is placed in this directory.
+- /distillm: The official reproduction of the Distillm method is in this folder.
+- /EasyEdit: A library of tools for cumulative neuronal knowledge detection on large models.
+- /minillm:  The official reproduction of the Minillm method is in this folder.
+- /mpu: The Transformer library for parallel computing.
+- /probe_data: Probe dataset for probing teacher models.
+- /probe_teacher_data: Results after probing the teacher model.
+- /results: The path where the results of the model training are stored.
+- /tools: Some of the tools commonly used in the code.
+
+## Environments
+
+Before running this project, please install the following environment:
+
+```shell
+pip install -r requirements.txt
+```
 
 ## Usage
 

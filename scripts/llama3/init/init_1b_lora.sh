@@ -1,14 +1,14 @@
 #! /bin/bash
 
 # 显卡选择
-GPU_IDS=${4-"2,3"} # 使用第四个参数指定显卡编号，默认为 "0"
+GPU_IDS=${4-"0"} # 使用第四个参数指定显卡编号，默认为 "0"
 export CUDA_VISIBLE_DEVICES=${GPU_IDS}
 
 MASTER_ADDR=localhost
 MASTER_PORT=${2-2012}
 NNODES=1
 NODE_RANK=0
-GPUS_PER_NODE=${3-2}
+GPUS_PER_NODE=${3-1}
 
 DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
                   --nnodes $NNODES \
@@ -18,7 +18,7 @@ DISTRIBUTED_ARGS="--nproc_per_node $GPUS_PER_NODE \
 
 # model
 BASE_PATH=${1-"."}
-CKPT_NAME="llama-3.2-1b"
+CKPT_NAME="llama3.2-1b"
 CKPT="${BASE_PATH}/checkpoints/${CKPT_NAME}/"
 # data
 DATA_DIR="${BASE_PATH}/processed_data/dolly/full/llama3/"
@@ -57,7 +57,7 @@ OPTS+=" --warmup-iters 0"
 OPTS+=" --lr-decay-style cosine"
 OPTS+=" --weight-decay 1e-2"
 OPTS+=" --clip-grad 1.0"
-OPTS+=" --epochs 3"
+OPTS+=" --epochs 5"
 # length
 OPTS+=" --max-length ${MAX_LENGTH}"
 OPTS+=" --max-prompt-length 256"
