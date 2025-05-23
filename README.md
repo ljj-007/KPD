@@ -1,33 +1,66 @@
-# KPD
+# KPD: Knowledge Probing Distillation Framework
 
-The codes for our KPD framework.
+**K**nowledge‑**P**robing‑based precise **D**istillation for Large Language Models
 
-## Framework
+## ✨ Key Features
 
-The overall workflow of our distillation framework, KPD, consists of three stages designed to enable precise and effective knowledge transfer. First, we probe the student model by computing the prediction uncertainty for each token and selecting those with the highest uncertainty as key tokens, which indicate the knowledge gaps. Second, we probe the teacher model to locate where the relevant knowledge is stored. Using integrated gradients, we compute attribution scores for each neuron and identify the teacher layers that are most responsible for predicting the key tokens. Third, we perform distillation from the selected teacher layers to proportionally mapped student layers using an isometric mapping strategy, minimizing the KL divergence between intermediate logits to guide the student in learning the missing knowledge. This pipeline allows our KPD to focus distillation on what the student needs and where the teacher provides it. 
+- **Token‑level Need Discovery** – Identify *what* the student has not learned via uncertainty‑based probing.
+- **Neuron Attribution Mapping** – Locate *where* the teacher stores the missing knowledge using integrated‑gradient attributions.
+- **Focused Layer‑to‑Layer Transfer** – Distil only the relevant information through isometric layer mapping and KL‑divergence minimisation.
+
+## 📑 Table of Contents
+
+1. Overview
+2. Architecture
+3. Project Layout
+4. Installation
+5. Data Preparation
+6. Probe & Distil
+7. Evaluation
+8. Citation
+9. License
+
+## 🏖️ Overview
+
+KPD is a three‑stage framework that **learns exactly what the student model lacks and transfers only the necessary knowledge** from a large teacher model, resulting in faster and more parameter‑efficient training.
+
+1. **Student Probing** Compute token‑level prediction uncertainty and pick the *key tokens* with the highest entropy.
+2. **Teacher Probing** Run integrated gradients on the teacher to obtain neuron attributions for these key tokens and select the most responsible layers.
+3. **Targeted Distillation** Match each selected teacher layer to a proportionally mapped student layer (isometric mapping) and minimise the KL divergence between their intermediate logits.
 
 ![](./framework.png)
 
-## Folder Structure
+## 🚁 Architecture
+
+student (N layers)              teacher (M layers)
+      │                                │
+      │ ① uncertainty probing          │ ② attribution probing
+      ▼                                ▼
+ key tokens  ─────────►  responsible teacher layers
+      │                                │
+      └────────── ③ isometric mapping ─┘
+                     & KL minimisation
+
+## 💺 Project Layout
 
 The structure of the folder is shown below:
 
 ```csharp
- KPD
- ├─configs
- ├─data
- ├─data_utils
- ├─distillm
- ├─EasyEdit
- ├─examples
- ├─minillm
- ├─mpu
- ├─probe_data
- ├─probe_teacher_data
- ├─results
- ├─scripts
- ├─tools
- └README.md
+KPD
+├── configs/                 # YAML/JSON experiment configs
+├── data/                    # Raw & processed datasets
+├── data_utils/              # Data loaders & preprocessing scripts
+├── distillm/                # Offical DistillM reproduction
+├── EasyEdit/                # Neuron knowledge editing toolkit
+├── examples/                # End‑to‑end usage examples
+├── minillm/                 # Official MiniLLM reproduction
+├── mpu/                     # Parallel‑aware Transformer ops
+├── probe_data/              # Student probing intermediate files
+├── probe_teacher_data/      # Teacher probing intermediate files
+├── results/                 # Checkpoints & evaluation outputs
+├── scripts/                 # Shell helpers & slurm jobs
+├── tools/                   # Misc utility scripts
+└── README.md
 ```
 
 Introduction to the structure of the folder:
@@ -44,15 +77,35 @@ Introduction to the structure of the folder:
 - /results: The path where the results of the model training are stored.
 - /tools: Some of the tools commonly used in the code.
 
-## Environments
+## 🎄 Installation
 
-Before running this project, please install the following environment:
+Ensure **Python ≥ 3.9** and **CUDA 11.7+** are available, then install dependencies:
 
 ```shell
 pip install -r requirements.txt
 ```
 
-## Usage
+## 🍧 Data Preparation
+
+Run *the provided scripts to preprocess Dolly‑15k and the pre‑training mixtures for each backbone:*
+
+```shell
+# LLaMA 2 (7B)
+./scripts/llama2/tools/process_data_dolly.sh
+./scripts/llama2/tools/process_data_pretrain.sh
+
+# LLaMA 3 (8B)
+./scripts/llama3/tools/process_data_dolly.sh
+./scripts/llama3/tools/process_data_pretrain.sh
+
+# Qwen 2.5 (7B)
+./scripts/qwen/tools/process_data_dolly.sh
+./scripts/qwen/tools/process_data_pretrain.sh
+```
+
+## 🍬 Probe & Distillation
+
+Below is a minimal example for *KD + PKD* on a LLaMA‑3.2‑1B student.
 
 - 01 Probe the student model
 
@@ -64,13 +117,24 @@ python 01_probe_student.py
 
 ```shell
 chmod 777 ./run_02.sh
-./run_02.sh
+./run_02.sh  # calls 02_probe_teacher.py internally
 ```
 
-- 03 Distill from teacher model to student model
+- 03 Distill from teacher model to student model, different backbone distillation methods can be selected by modifying the type parameter in run_pkd.sh
 
 ```shell
 chmod 777 ./run_pkd
-./run_pkd
+./run_pkd   # classic knowledge distillation
 ```
 
+## ☕ Evaluation
+
+After training, evaluate on all benchmarks:
+
+```shell
+./scripts/llama2/eval/eval_pkd_kd/run_eval.sh
+./scripts/llama3/eval/eval_pkd_kd/run_eval.sh
+./scripts/qwen/eval/eval_pkd_kd/run_eval.sh
+```
+
+The evaluation script prints accuracy, perplexity, and average score across *Dolly, Self‑Instr, SInSt, UInSt,* and *Vicuna*.
