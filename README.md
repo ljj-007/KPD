@@ -69,7 +69,7 @@ Introduction to the structure of the folder:
 - /data: The data for this project is stored in this directory.
 - /data_utils: The data processing flow for this project is placed in this directory.
 - /distillm: The official reproduction of the Distillm method is in this folder.
-- /EasyEdit: A library of tools for cumulative neuronal knowledge detection on large models. (Limited to the size, we add the whole EasyEdit codes and resources in the Supplemental Materials)
+- /EasyEdit: The library of tools for cumulative neuronal knowledge detection on large models. 
 - /minillm:  The official reproduction of the Minillm method is in this folder.
 - /abkd:  The official reproduction of the ABKD method is in this folder.
 - /distillm-2:  The official reproduction of the Distillm-2 method is in this folder.
