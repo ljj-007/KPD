@@ -17,10 +17,8 @@
 5. Data Preparation
 6. Probe & Distil
 7. Evaluation
-8. Citation
-9. License
 
-## 🏖️ Overview
+## 🏖️ 1. Overview
 
 KPD is a three‑stage framework that **learns exactly what the student model lacks and transfers only the necessary knowledge** from a large teacher model, resulting in faster and more parameter‑efficient training.
 
@@ -30,7 +28,7 @@ KPD is a three‑stage framework that **learns exactly what the student model la
 
 ![](./framework.png)
 
-## 🚁 Architecture
+## 🚁 2. Architecture
 
 student (N layers)              teacher (M layers)
       │                                │
@@ -41,7 +39,7 @@ student (N layers)              teacher (M layers)
       └────────── ③ isometric mapping ─┘
                      & KL minimisation
 
-## 💺 Project Layout
+## 💺 3. Project Layout
 
 The structure of the folder is shown below:
 
@@ -54,6 +52,8 @@ KPD
 ├── EasyEdit/                # Neuron knowledge editing toolkit
 ├── examples/                # End‑to‑end usage examples
 ├── minillm/                 # Official MiniLLM reproduction
+├── abkd/                    # Official abkd reproduction
+├── disitllm-2/              # Official distillm-2 reproduction
 ├── mpu/                     # Parallel‑aware Transformer ops
 ├── probe_data/              # Student probing intermediate files
 ├── probe_teacher_data/      # Teacher probing intermediate files
@@ -69,15 +69,17 @@ Introduction to the structure of the folder:
 - /data: The data for this project is stored in this directory.
 - /data_utils: The data processing flow for this project is placed in this directory.
 - /distillm: The official reproduction of the Distillm method is in this folder.
-- /EasyEdit: A library of tools for cumulative neuronal knowledge detection on large models.
+- /EasyEdit: A library of tools for cumulative neuronal knowledge detection on large models. (Limited to the size, we add the whole EasyEdit codes and resources in the Supplemental Materials)
 - /minillm:  The official reproduction of the Minillm method is in this folder.
+- /abkd:  The official reproduction of the ABKD method is in this folder.
+- /distillm-2:  The official reproduction of the Distillm-2 method is in this folder.
 - /mpu: The Transformer library for parallel computing.
 - /probe_data: Probe dataset for probing teacher models.
 - /probe_teacher_data: Results after probing the teacher model.
 - /results: The path where the results of the model training are stored.
 - /tools: Some of the tools commonly used in the code.
 
-## 🎄 Installation
+## 🎄 4. Installation
 
 Ensure **Python ≥ 3.9** and **CUDA 11.7+** are available, then install dependencies:
 
@@ -85,7 +87,7 @@ Ensure **Python ≥ 3.9** and **CUDA 11.7+** are available, then install dep
 pip install -r requirements.txt
 ```
 
-## 🍧 Data Preparation
+## 🍧 5. Data Preparation
 
 Run *the provided scripts to preprocess Dolly‑15k and the pre‑training mixtures for each backbone:*
 
@@ -103,7 +105,7 @@ Run *the provided scripts to preprocess Dolly‑15k and the pre‑training mixtu
 ./scripts/qwen/tools/process_data_pretrain.sh
 ```
 
-## 🍬 Probe & Distillation
+## 🍬 6. Probe & Distillation
 
 Below is a minimal example for *KD + PKD* on a LLaMA‑3.2‑1B student.
 
@@ -127,7 +129,7 @@ chmod 777 ./run_pkd
 ./run_pkd   # classic knowledge distillation
 ```
 
-## ☕ Evaluation
+## ☕ 7. Evaluation
 
 After training, evaluate on all benchmarks:
 
